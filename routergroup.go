@@ -83,10 +83,21 @@ func (group *RouterGroup) BasePath() string {
 	return group.basePath
 }
 
+// 这是 Gin 路由注册的核心入口方法，所有 HTTP 方法（GET/POST/PUT 等）的路由注册最终都会调用这个方法
+// 它的作用是把「路由路径、HTTP 方法、处理器链」三者绑定，最终写入 Gin 的路由树中
+// handle 是路由注册的核心方法，负责：
+// 1. 计算路由绝对路径
+// 2. 合并路由组中间件和当前路由处理器
+// 3. 向引擎注册路由（写入路由树）
+// 4. 返回IRoutes接口，支持链式调用
 func (group *RouterGroup) handle(httpMethod, relativePath string, handlers HandlersChain) IRoutes {
+	// 1. 计算路由的绝对路径（基础路径 + 相对路径）
 	absolutePath := group.calculateAbsolutePath(relativePath)
+	// 2. 合并处理器链（路由组中间件 + 当前路由处理器）
 	handlers = group.combineHandlers(handlers)
+	// 3. 调用Engine的addRoute方法，将路由写入路由树
 	group.engine.addRoute(httpMethod, absolutePath, handlers)
+	// 4. 返回链式调用对象（支持r.GET().POST()这种写法）
 	return group.returnObj()
 }
 
@@ -235,12 +246,21 @@ func (group *RouterGroup) createStaticHandler(relativePath string, fs http.FileS
 	}
 }
 
+// 用于将「路由组的全局中间件」和「当前路由的局部处理器 / 中间件」合并成一个完整的处理器链（HandlersChain）
+// 是 Gin 实现 “中间件层级复用” 的关键
+// combineHandlers 合并路由组的Handlers和当前路由的Handlers，返回完整的处理器链
 func (group *RouterGroup) combineHandlers(handlers HandlersChain) HandlersChain {
+	// 1. 计算合并后的处理器链总长度：路由组中间件数 + 当前路由处理器数
 	finalSize := len(group.Handlers) + len(handlers)
+	// 2. 断言校验：总长度不能超过abortIndex（默认63），避免处理器链过长
 	assert1(finalSize < int(abortIndex), "too many handlers")
+	// 3. 预分配合并后的处理器链切片（容量=总长度），避免扩容
 	mergedHandlers := make(HandlersChain, finalSize)
+	// 4. 拷贝路由组的Handlers到合并切片的前半部分
 	copy(mergedHandlers, group.Handlers)
+	// 5. 拷贝当前路由的Handlers到合并切片的后半部分
 	copy(mergedHandlers[len(group.Handlers):], handlers)
+	// 6. 返回合并后的完整处理器链
 	return mergedHandlers
 }
 

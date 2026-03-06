@@ -404,25 +404,34 @@ func (engine *Engine) rebuild405Handlers() {
 	engine.allNoMethod = engine.combineHandlers(engine.noMethod)
 }
 
+// 这是 Gin 路由注册的底层核心实现，负责将handle方法传递过来的「HTTP 方法、绝对路径、处理器链」最终写入到对应的前缀树（trees）中，
+// 同时更新路由的全局统计信息（最大参数数、最大分段数），是连接上层路由注册和底层路由树的关键桥梁。
 func (engine *Engine) addRoute(method, path string, handlers HandlersChain) {
-	assert1(path[0] == '/', "path must begin with '/'")
-	assert1(method != "", "HTTP method can not be empty")
-	assert1(len(handlers) > 0, "there must be at least one handler")
+	// 1. 合法性断言校验（不满足则panic）
+	assert1(path[0] == '/', "path must begin with '/'")              // 路径必须以/开头
+	assert1(method != "", "HTTP method can not be empty")            // HTTP方法不能为空
+	assert1(len(handlers) > 0, "there must be at least one handler") // 至少有一个处理器
 
+	// 2. 调试模式下打印路由信息（如GET /admin/profile [AuthMiddleware, ProfileHandler]）
 	debugPrintRoute(method, path, handlers)
 
+	// 3. 找到当前HTTP方法对应的路由树根节点（比如GET方法的root）
 	root := engine.trees.get(method)
 	if root == nil {
+		// 3.1 若不存在该方法的路由树，新建根节点并加入trees数组
 		root = new(node)
 		root.fullPath = "/"
 		engine.trees = append(engine.trees, methodTree{method: method, root: root})
 	}
+	// 4. 调用根节点的addRoute方法，将路径+处理器链插入到前缀树中
 	root.addRoute(path, handlers)
 
+	// 5. 更新全局最大路径参数数（用于Context预分配）
 	if paramsCount := countParams(path); paramsCount > engine.maxParams {
 		engine.maxParams = paramsCount
 	}
 
+	// 6. 更新全局最大路径分段数（用于Context预分配）
 	if sectionsCount := countSections(path); sectionsCount > engine.maxSections {
 		engine.maxSections = sectionsCount
 	}

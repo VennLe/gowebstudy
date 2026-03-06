@@ -19,13 +19,13 @@ type Param struct {
 	Value string
 }
 
-// Params 是 Param 切片，由路由器返回。
-// 该切片是有序的，第一个 URL 参数也是第一个切片值。
-// 因此通过索引读取值是安全的。
+// Params 是 Param 切片，由路由器返回
+// 该切片是有序的，第一个 URL 参数也是第一个切片值
+// 因此通过索引读取值是安全的
 type Params []Param
 
-// Get 返回第一个键与给定名称匹配的 Param 的值和一个布尔值 true。
-// 如果未找到匹配的 Param，则返回空字符串和布尔值 false。
+// Get 返回第一个键与给定名称匹配的 Param 的值和一个布尔值 true
+// 如果未找到匹配的 Param，则返回空字符串和布尔值 false
 func (ps Params) Get(name string) (string, bool) {
 	for _, entry := range ps {
 		if entry.Key == name {
@@ -42,9 +42,18 @@ func (ps Params) ByName(name string) (va string) {
 	return
 }
 
+// 为了实现按 HTTP 方法隔离路由树而设计的轻量级结构体，核心作用是将「HTTP 方法（如 GET/POST）」
+// 和「该方法对应的路由前缀树根节点（*node）」绑定在一起，是engine.trees（路由树集合）的基本组成单元。
+// methodTree是连接 “HTTP 方法” 和 “前缀树” 的关键桥梁
+// methodTree 绑定HTTP方法与对应的路由前缀树根节点
 type methodTree struct {
-	method string
-	root   *node
+	//HTTP 方法标识
+	// 严格区分大小写（Gin 内部统一用大写，如"GET"而非"get"）；每个methodTree对应唯一的 HTTP 方法
+	method string // HTTP请求方法（GET/POST/PUT/DELETE等，全大写）
+
+	// 前缀树根节点
+	// 是你之前学的node结构体指针，该根节点是当前 HTTP 方法所有路由的 “入口”；比如 GET 方法的root节点下，挂载了所有GET /xxx的路由节点
+	root *node // 该方法对应的路由前缀树的根节点（所有该方法的路由都挂在这个根节点下）
 }
 
 type methodTrees []methodTree
@@ -137,13 +146,18 @@ type node struct {
 	fullPath string
 }
 
-// 增加给定子节点的优先级，并在必要时重新排序
+// 增加给定子节点的优先级，并在必要时重新排序子节点列表
+// 优化路由匹配性能而设计的核心辅助函数，作用是动态提升路由节点（node）的优先级，并调整子节点的排序，
+// 让访问频率更高的路由节点优先被匹配，进一步降低路由匹配的平均耗时。
 func (n *node) incrementChildPrio(pos int) int {
+	// 1. 找到目标子节点，优先级+1
 	cs := n.children
 	cs[pos].priority++
 	prio := cs[pos].priority
 
 	// 调整位置 (move to front)
+	// 2. 向前遍历子节点列表，将当前节点与优先级更低的节点交换位置
+	//    最终实现：优先级高的节点排在children数组前面
 	newPos := pos
 	for ; newPos > 0 && cs[newPos-1].priority < prio; newPos-- {
 		// 交换节点位置

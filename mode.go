@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
-// EnvGinMode indicates environment name for gin mode.
+// EnvGinMode 表示 gin 模式的环境变量名。
 const EnvGinMode = "GIN_MODE"
 
 const (
@@ -31,17 +31,15 @@ const (
 	testCode
 )
 
-// DefaultWriter is the default io.Writer used by Gin for debug output and
-// middleware output like Logger() or Recovery().
-// Note that both Logger and Recovery provides custom ways to configure their
-// output io.Writer.
-// To support coloring in Windows use:
+// DefaultWriter 是 Gin 默认使用的 io.Writer，用于输出调试信息以及中间件的输出，比如 Logger() 或 Recovery()。
+// 注意，Logger 和 Recovery 都提供了自定义输出流 io.Writer 的方式。
+// 要在 Windows 中支持彩色输出，请使用：
 //
 //	import "github.com/mattn/go-colorable"
 //	gin.DefaultWriter = colorable.NewColorableStdout()
 var DefaultWriter io.Writer = os.Stdout
 
-// DefaultErrorWriter is the default io.Writer used by Gin to debug errors
+// DefaultErrorWriter 是 Gin 默认用于输出调试错误的 io.Writer。
 var DefaultErrorWriter io.Writer = os.Stderr
 
 var (
@@ -54,7 +52,7 @@ func init() {
 	SetMode(mode)
 }
 
-// SetMode sets gin mode according to input string.
+// SetMode 根据输入的字符串设置 Gin 的运行模式。
 func SetMode(value string) {
 	if value == "" {
 		if flag.Lookup("test.v") != nil {
@@ -77,24 +75,22 @@ func SetMode(value string) {
 	modeName.Store(value)
 }
 
-// DisableBindValidation closes the default validator.
+// DisableBindValidation 会关闭默认的验证器
 func DisableBindValidation() {
 	binding.Validator = nil
 }
 
-// EnableJsonDecoderUseNumber sets true for binding.EnableDecoderUseNumber to
-// call the UseNumber method on the JSON Decoder instance.
+// EnableJsonDecoderUseNumber 将 binding.EnableDecoderUseNumber 设为 true，以在 JSON 解码器实例上调用 UseNumber 方法
 func EnableJsonDecoderUseNumber() {
 	binding.EnableDecoderUseNumber = true
 }
 
-// EnableJsonDecoderDisallowUnknownFields sets true for binding.EnableDecoderDisallowUnknownFields to
-// call the DisallowUnknownFields method on the JSON Decoder instance.
+// EnableJsonDecoderDisallowUnknownFields 将 binding.EnableDecoderDisallowUnknownFields 设为 true，以在 JSON 解码器实例上调用 DisallowUnknownFields 方法
 func EnableJsonDecoderDisallowUnknownFields() {
 	binding.EnableDecoderDisallowUnknownFields = true
 }
 
-// Mode returns current gin mode.
+// Mode 返回当前 Gin 的运行模式。
 func Mode() string {
 	return modeName.Load().(string)
 }
