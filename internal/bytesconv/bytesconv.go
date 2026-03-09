@@ -8,13 +8,13 @@ import (
 	"unsafe"
 )
 
-// StringToBytes converts string to byte slice without a memory allocation.
+// StringToBytes 将字符串转换为字节切片，无需进行内存分配。
 // For more details, see https://github.com/golang/go/issues/53003#issuecomment-1140276077.
 func StringToBytes(s string) []byte {
 	return unsafe.Slice(unsafe.StringData(s), len(s))
 }
 
-// BytesToString converts byte slice to string without a memory allocation.
+// BytesToString 将字节切片转换为字符串，无需进行内存分配。
 // For more details, see https://github.com/golang/go/issues/53003#issuecomment-1140276077.
 func BytesToString(b []byte) string {
 	return unsafe.String(unsafe.SliceData(b), len(b))

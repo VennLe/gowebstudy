@@ -297,10 +297,14 @@ func (c *Context) MustGet(key any) any {
 	panic(fmt.Sprintf("key %v does not exist", key))
 }
 
+// 泛型函数：从Gin Context中获取指定key的指定类型值
 func getTyped[T any](c *Context, key any) (res T) {
+	// 1. 从Context中获取key对应的值，ok表示是否存在
 	if val, ok := c.Get(key); ok && val != nil {
+		// 2. 类型断言：尝试将val转换为泛型类型T，忽略转换失败的错误
 		res, _ = val.(T)
 	}
+	// 3. 返回结果（存在且转换成功则返回对应值，否则返回T的零值）
 	return
 }
 
@@ -329,22 +333,22 @@ func (c *Context) GetInt16(key any) int16 {
 	return getTyped[int16](c, key)
 }
 
-// GetInt32 returns the value associated with the key as an integer 32.
+// GetInt32 返回与键关联的值，并将其作为 32 位整数。
 func (c *Context) GetInt32(key any) int32 {
 	return getTyped[int32](c, key)
 }
 
-// GetInt64 returns the value associated with the key as an integer 64.
+// GetInt64 返回与键关联的值，并将其作为 64 位整数。
 func (c *Context) GetInt64(key any) int64 {
 	return getTyped[int64](c, key)
 }
 
-// GetUint returns the value associated with the key as an unsigned integer.
+// GetUint 返回与键关联的值，并将其作为无符号整数。
 func (c *Context) GetUint(key any) uint {
 	return getTyped[uint](c, key)
 }
 
-// GetUint8 returns the value associated with the key as an unsigned integer 8.
+// GetUint8 返回与键关联的值，并将其作为 8 位无符号整数。
 func (c *Context) GetUint8(key any) uint8 {
 	return getTyped[uint8](c, key)
 }
