@@ -15,34 +15,34 @@ import (
 	"github.com/gin-gonic/gin/internal/bytesconv"
 )
 
-// JSON contains the given interface object.
+// JSON 包含了给定的接口对象。
 type JSON struct {
 	Data any
 }
 
-// IndentedJSON contains the given interface object.
+// IndentedJSON 包含了给定的接口对象。
 type IndentedJSON struct {
 	Data any
 }
 
-// SecureJSON contains the given interface object and its prefix.
+// SecureJSON 包含了给定的接口对象及其前缀。
 type SecureJSON struct {
 	Prefix string
 	Data   any
 }
 
-// JsonpJSON contains the given interface object its callback.
+// JsonpJSON 包含了给定的接口对象及其回调函数。
 type JsonpJSON struct {
 	Callback string
 	Data     any
 }
 
-// AsciiJSON contains the given interface object.
+// AsciiJSON 包含了给定的接口对象。
 type AsciiJSON struct {
 	Data any
 }
 
-// PureJSON contains the given interface object.
+// PureJSON 包含了给定的接口对象。
 type PureJSON struct {
 	Data any
 }
@@ -53,17 +53,17 @@ var (
 	jsonASCIIContentType = []string{"application/json"}
 )
 
-// Render (JSON) writes data with custom ContentType.
+// Render (JSON) 方法按照自定义的 Content-Type 写入数据。
 func (r JSON) Render(w http.ResponseWriter) error {
 	return WriteJSON(w, r.Data)
 }
 
-// WriteContentType (JSON) writes JSON ContentType.
+// WriteContentType (JSON) 写入 JSON 格式的 Content-Type。
 func (r JSON) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, jsonContentType)
 }
 
-// WriteJSON marshals the given interface object and writes it with custom ContentType.
+// WriteJSON 序列化给定的接口对象并按自定义的 Content-Type 写入。
 func WriteJSON(w http.ResponseWriter, obj any) error {
 	writeContentType(w, jsonContentType)
 	jsonBytes, err := json.API.Marshal(obj)

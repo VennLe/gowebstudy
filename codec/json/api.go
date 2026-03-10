@@ -6,10 +6,10 @@ package json
 
 import "io"
 
-// API the json codec in use.
+// API 当前使用的 JSON 编解码器。
 var API Core
 
-// Core the api for json codec.
+// Core JSON 编解码器的核心接口。
 type Core interface {
 	Marshal(v any) ([]byte, error)
 	Unmarshal(data []byte, v any) error

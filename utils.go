@@ -25,7 +25,7 @@ const localhostIP = "127.0.0.1"
 // localhostIPv6 indicates the default localhost IPv6 address.
 const localhostIPv6 = "::1"
 
-// Bind is a helper function for given interface object and returns a Gin middleware.
+// Bind 是一个辅助函数，用于处理给定的接口对象，并返回一个 Gin 中间件。
 func Bind(val any) HandlerFunc {
 	value := reflect.ValueOf(val)
 	if value.Kind() == reflect.Ptr {
@@ -43,14 +43,14 @@ func Bind(val any) HandlerFunc {
 	}
 }
 
-// WrapF is a helper function for wrapping http.HandlerFunc and returns a Gin middleware.
+// WrapF 是一个辅助函数，用于包装 http.HandlerFunc 并返回一个 Gin 中间件。
 func WrapF(f http.HandlerFunc) HandlerFunc {
 	return func(c *Context) {
 		f(c.Writer, c.Request)
 	}
 }
 
-// WrapH is a helper function for wrapping http.Handler and returns a Gin middleware.
+// WrapH 是一个辅助函数，用于包装 http.Handler 并返回一个 Gin 中间件。
 func WrapH(h http.Handler) HandlerFunc {
 	return func(c *Context) {
 		h.ServeHTTP(c.Writer, c.Request)

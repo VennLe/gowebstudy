@@ -1080,6 +1080,7 @@ func (c *Context) GetHeader(key string) string {
 }
 
 // GetRawData 返回流数据。
+// 读取 HTTP 请求体的原始字节数据，且是「一次性读取」—— 读取后会清空请求体流，无法再次读取（除非重新封装）。
 func (c *Context) GetRawData() ([]byte, error) {
 	if c.Request.Body == nil {
 		return nil, errors.New("cannot read nil body")

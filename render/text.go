@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin/internal/bytesconv"
 )
 
-// String contains the given interface object slice and its format.
+// String 包含了给定的接口对象切片及其格式。
 type String struct {
 	Format string
 	Data   []any
@@ -19,12 +19,12 @@ type String struct {
 
 var plainContentType = []string{"text/plain; charset=utf-8"}
 
-// Render (String) writes data with custom ContentType.
+// Render (String) 方法按照自定义的 Content-Type 写入数据。
 func (r String) Render(w http.ResponseWriter) error {
 	return WriteString(w, r.Format, r.Data)
 }
 
-// WriteContentType (String) writes Plain ContentType.
+// WriteContentType (String) 写入纯文本的 Content-Type。
 func (r String) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, plainContentType)
 }
