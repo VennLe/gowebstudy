@@ -10,7 +10,7 @@ type FileSystem struct {
 	http.FileSystem
 }
 
-// Open passes `Open` to the upstream implementation and return an [fs.File].
+// Open 将 Open 传递给上游实现，并返回一个 [fs.File]。
 func (o FileSystem) Open(name string) (fs.File, error) {
 	f, err := o.FileSystem.Open(name)
 	if err != nil {

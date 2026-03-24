@@ -10,14 +10,14 @@ import (
 	"github.com/pelletier/go-toml/v2"
 )
 
-// TOML contains the given interface object.
+// TOML 包含给定的接口对象。
 type TOML struct {
 	Data any
 }
 
 var tomlContentType = []string{"application/toml; charset=utf-8"}
 
-// Render (TOML) marshals the given interface object and writes data with custom ContentType.
+// Render (TOML) 对给定的接口对象进行序列化，并使用自定义内容类型写入数据。
 func (r TOML) Render(w http.ResponseWriter) error {
 	r.WriteContentType(w)
 
@@ -30,7 +30,7 @@ func (r TOML) Render(w http.ResponseWriter) error {
 	return err
 }
 
-// WriteContentType (TOML) writes TOML ContentType for response.
+// WriteContentType (TOML) 为响应写入 TOML 内容类型。
 func (r TOML) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, tomlContentType)
 }

@@ -9,20 +9,20 @@ import (
 	"net/http"
 )
 
-// XML contains the given interface object.
+// XML 包含给定的接口对象。
 type XML struct {
 	Data any
 }
 
 var xmlContentType = []string{"application/xml; charset=utf-8"}
 
-// Render (XML) encodes the given interface object and writes data with custom ContentType.
+// Render (XML) 编码给定的接口对象，并使用自定义内容类型写入数据。
 func (r XML) Render(w http.ResponseWriter) error {
 	r.WriteContentType(w)
 	return xml.NewEncoder(w).Encode(r.Data)
 }
 
-// WriteContentType (XML) writes XML ContentType for response.
+// WriteContentType (XML) 为响应写入 XML 内容类型。
 func (r XML) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, xmlContentType)
 }

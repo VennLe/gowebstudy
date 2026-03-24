@@ -10,14 +10,14 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ProtoBuf contains the given interface object.
+// ProtoBuf 包含给定的接口对象。
 type ProtoBuf struct {
 	Data any
 }
 
 var protobufContentType = []string{"application/x-protobuf"}
 
-// Render (ProtoBuf) marshals the given interface object and writes data with custom ContentType.
+// Render (ProtoBuf) 对给定的接口对象进行序列化，并使用自定义内容类型写入数据。
 func (r ProtoBuf) Render(w http.ResponseWriter) error {
 	r.WriteContentType(w)
 
@@ -30,7 +30,7 @@ func (r ProtoBuf) Render(w http.ResponseWriter) error {
 	return err
 }
 
-// WriteContentType (ProtoBuf) writes ProtoBuf ContentType.
+// WriteContentType (ProtoBuf) 写入 ProtoBuf 内容类型。
 func (r ProtoBuf) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, protobufContentType)
 }

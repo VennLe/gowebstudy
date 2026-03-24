@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-// Reader contains the IO reader and its length, and custom ContentType and other headers.
+// Reader 包含 IO 读取器及其长度，以及自定义内容类型和其他头部信息。
 type Reader struct {
 	ContentType   string
 	ContentLength int64
@@ -18,7 +18,7 @@ type Reader struct {
 	Headers       map[string]string
 }
 
-// Render (Reader) writes data with custom ContentType and headers.
+// Render (Reader) 使用自定义内容类型和头部信息写入数据。
 func (r Reader) Render(w http.ResponseWriter) (err error) {
 	r.WriteContentType(w)
 	if r.ContentLength >= 0 {
@@ -32,12 +32,12 @@ func (r Reader) Render(w http.ResponseWriter) (err error) {
 	return
 }
 
-// WriteContentType (Reader) writes custom ContentType.
+// WriteContentType (Reader) 写入自定义内容类型。
 func (r Reader) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, []string{r.ContentType})
 }
 
-// writeHeaders writes headers from r.Headers into response.
+// writeHeaders 将 r.Headers 中的头部信息写入响应。
 func (r Reader) writeHeaders(w http.ResponseWriter) {
 	header := w.Header()
 	for k, v := range r.Headers {
