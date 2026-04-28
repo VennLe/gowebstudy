@@ -59,12 +59,14 @@ const abortIndex int8 = math.MaxInt8 >> 1
 // 管理流程、验证请求的 JSON 数据，以及渲染 JSON 响应等。
 type Context struct {
 	writermem responseWriter
-	Request   *http.Request
-	Writer    ResponseWriter
+	// 1. 请求与响应
+	Request *http.Request
+	Writer  ResponseWriter
 
-	Params   Params
-	handlers HandlersChain
-	index    int8
+	// 2. 路由信息
+	Params   Params        // 路由参数（如 `/user/:id` 中的 `id`）
+	handlers HandlersChain // 当前请求需要执行的处理器（中间件+最终处理器）链
+	index    int8          // 指向当前执行到 handlers 链中的第几个处理器
 	fullPath string
 
 	engine       *Engine
@@ -74,7 +76,7 @@ type Context struct {
 	// 此互斥锁用于保护 Keys 映射
 	mu sync.RWMutex
 
-	// Keys 是专用于每个请求上下文的键/值对
+	// Keys 是专用于每个请求上下文的键/值对，用于中间件/处理器间共享数据
 	Keys map[any]any
 
 	// Errors 是附加到所有使用此上下文的处理器/中间件的错误列表

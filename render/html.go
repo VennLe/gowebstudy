@@ -11,27 +11,27 @@ import (
 	"github.com/gin-gonic/gin/internal/fs"
 )
 
-// Delims represents a set of Left and Right delimiters for HTML template rendering.
+// Delims 表示用于 HTML 模板渲染的一组左分隔符和右分隔符。
 type Delims struct {
-	// Left delimiter, defaults to {{.
+	// 左分隔符默认是 {{.
 	Left string
-	// Right delimiter, defaults to }}.
+	// 右分隔符默认是 }}.
 	Right string
 }
 
-// HTMLRender interface is to be implemented by HTMLProduction and HTMLDebug.
+// HTMLRender 接口由 HTMLProduction 和 HTMLDebug 实现。
 type HTMLRender interface {
-	// Instance returns an HTML instance.
+	// Instance 返回一个 HTML 实例。
 	Instance(string, any) Render
 }
 
-// HTMLProduction contains template reference and its delims.
+// HTMLProduction 包含模板引用及其分隔符。
 type HTMLProduction struct {
 	Template *template.Template
 	Delims   Delims
 }
 
-// HTMLDebug contains template delims and pattern and function with file list.
+// HTMLDebug 包含模板分隔符、模式以及处理文件列表的函数。
 type HTMLDebug struct {
 	Files      []string
 	Glob       string
@@ -41,7 +41,7 @@ type HTMLDebug struct {
 	FuncMap    template.FuncMap
 }
 
-// HTML contains template reference and its name with given interface object.
+// HTML 包含模板引用、其名称以及给定的接口对象。
 type HTML struct {
 	Template *template.Template
 	Name     string
