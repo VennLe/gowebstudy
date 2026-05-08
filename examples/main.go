@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/examples/routes"
 	"golang.org/x/sync/errgroup"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ var eg errgroup.Group
 
 func handHome() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		c.String(http.StatusOK, "hellp home!")
 	}
 }
 
@@ -23,7 +25,8 @@ func server01() http.Handler {
 
 func server02() http.Handler {
 	s2 := gin.New()
-	s2.GET("/index", handHome())
+	s2.GET("/user/:name", routes.UserHandler())
+	s2.GET("/product", routes.ProductHandler())
 	return s2
 }
 

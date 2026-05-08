@@ -289,7 +289,7 @@ func (engine *Engine) Handler() http.Handler {
 
 // 这是 Gin 为了优化路由匹配性能而设计的 Context 初始化方法，核心目的是为每个 HTTP 请求提前分配一个带有预分配内存的gin.Context对象，
 // 避免运行时频繁扩容切片，减少 GC（垃圾回收）压力。
-// Gin 的Context对象承载了请求的所有上下文信息（路径参数、请求头、响应 Writer 等），其中：
+// Gin 的Context对象承载了请求的所有上下文信息（routes、请求头、响应 Writer 等），其中：
 // params：存储路由匹配的路径参数（如/user/:id中的id=123），类型是Params（本质是[]Param切片）；
 // skippedNodes：存储路由匹配过程中跳过的节点（内部优化用），类型是[]skippedNode切片。
 // 如果每次请求都用make(Params, 0)创建空切片（默认容量 0），当路径参数较多时，切片会频繁扩容（每次扩容都会分配新内存、拷贝数据），这会显著增加 GC 负担，降低高并发下的性能。
