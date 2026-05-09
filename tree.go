@@ -448,6 +448,9 @@ type nodeValue struct {
 	fullPath string
 }
 
+// skippedNode 的设计目的 (读者注：)
+// 在路由匹配失败时，缓存 “刚才跳过的动态路由节点”，避免后续重复遍历查找，大幅提升路由匹配效率。
+// 它不是存正式路由的，是路由匹配时的临时缓存结构。
 type skippedNode struct {
 	path        string
 	node        *node

@@ -50,7 +50,7 @@ type HTML struct {
 
 var htmlContentType = []string{"text/html; charset=utf-8"}
 
-// Instance (HTMLProduction) returns an HTML instance which it realizes Render interface.
+// Instance (HTMLProduction) 返回一个实现了 Render 接口的 HTML 实例。
 func (r HTMLProduction) Instance(name string, data any) Render {
 	return HTML{
 		Template: r.Template,
@@ -59,7 +59,7 @@ func (r HTMLProduction) Instance(name string, data any) Render {
 	}
 }
 
-// Instance (HTMLDebug) returns an HTML instance which it realizes Render interface.
+// Instance (HTMLDebug) 返回一个实现了 Render 接口的 HTML 实例。
 func (r HTMLDebug) Instance(name string, data any) Render {
 	return HTML{
 		Template: r.loadTemplate(),
@@ -85,7 +85,7 @@ func (r HTMLDebug) loadTemplate() *template.Template {
 	panic("the HTML debug render was created without files or glob pattern or file system with patterns")
 }
 
-// Render (HTML) executes template and writes its result with custom ContentType for response.
+// Render (HTML) 执行模板，并使用自定义的 ContentType 将结果写入响应。
 func (r HTML) Render(w http.ResponseWriter) error {
 	r.WriteContentType(w)
 
@@ -95,7 +95,7 @@ func (r HTML) Render(w http.ResponseWriter) error {
 	return r.Template.ExecuteTemplate(w, r.Name, r.Data)
 }
 
-// WriteContentType (HTML) writes HTML ContentType.
+// WriteContentType (HTML) 写入 HTML 类型的 ContentType。
 func (r HTML) WriteContentType(w http.ResponseWriter) {
 	writeContentType(w, htmlContentType)
 }

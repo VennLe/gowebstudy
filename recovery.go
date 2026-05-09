@@ -28,20 +28,20 @@ const (
 	stackSkip = 3
 )
 
-// RecoveryFunc defines the function passable to CustomRecovery.
+// RecoveryFunc 定义了可传递给 CustomRecovery 的函数类型。
 type RecoveryFunc func(c *Context, err any)
 
-// Recovery returns a middleware that recovers from any panics and writes a 500 if there was one.
+// Recovery 返回一个中间件，它会从任何 panic 中恢复，并在发生 panic 时返回 500 状态码。
 func Recovery() HandlerFunc {
 	return RecoveryWithWriter(DefaultErrorWriter)
 }
 
-// CustomRecovery returns a middleware that recovers from any panics and calls the provided handle func to handle it.
+// CustomRecovery 返回一个中间件，它会从任何 panic 中恢复，并调用提供的处理函数来处理该 panic。
 func CustomRecovery(handle RecoveryFunc) HandlerFunc {
 	return RecoveryWithWriter(DefaultErrorWriter, handle)
 }
 
-// RecoveryWithWriter returns a middleware for a given writer that recovers from any panics and writes a 500 if there was one.
+// RecoveryWithWriter 为指定的 writer 返回一个中间件，它会从任何 panic 中恢复，并在发生 panic 时写入 500 状态码。
 func RecoveryWithWriter(out io.Writer, recovery ...RecoveryFunc) HandlerFunc {
 	if len(recovery) > 0 {
 		return CustomRecoveryWithWriter(out, recovery[0])
@@ -49,7 +49,7 @@ func RecoveryWithWriter(out io.Writer, recovery ...RecoveryFunc) HandlerFunc {
 	return CustomRecoveryWithWriter(out, defaultHandleRecovery)
 }
 
-// CustomRecoveryWithWriter returns a middleware for a given writer that recovers from any panics and calls the provided handle func to handle it.
+// CustomRecoveryWithWriter 为指定的 writer 返回一个中间件，它会从任何 panic 中恢复，并调用提供的处理函数来处理该 panic。
 func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) HandlerFunc {
 	var logger *log.Logger
 	if out != nil {
@@ -58,8 +58,7 @@ func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) HandlerFunc {
 	return func(c *Context) {
 		defer func() {
 			if rec := recover(); rec != nil {
-				// Check for a broken connection, as it is not really a
-				// condition that warrants a panic stack trace.
+				// 检查连接是否已断开，因为这种情况通常不应导致 panic 并打印堆栈跟踪。
 				var isBrokenPipe bool
 				err, ok := rec.(error)
 				if ok {
@@ -79,7 +78,7 @@ func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) HandlerFunc {
 					}
 				}
 				if isBrokenPipe {
-					// If the connection is dead, we can't write a status to it.
+					// 如果连接已断开，我们将无法向它写入状态码。
 					c.Error(err) //nolint: errcheck
 					c.Abort()
 				} else {
@@ -91,10 +90,8 @@ func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) HandlerFunc {
 	}
 }
 
-// secureRequestDump returns a sanitized HTTP request dump where the Authorization header,
-// if present, is replaced with a masked value ("Authorization: *") to avoid leaking sensitive credentials.
-//
-// Currently, only the Authorization header is sanitized. All other headers and request data remain unchanged.
+// secureRequestDump 返回一个脱敏后的 HTTP 请求转储，其中 Authorization 头（如果存在）会被替换为掩码值（"Authorization: *"），以防止泄露敏感凭据。
+// 目前仅对 Authorization 头进行脱敏处理。所有其他头部和请求数据均保持不变。
 func secureRequestDump(r *http.Request) string {
 	httpRequest, _ := httputil.DumpRequest(r, false)
 	lines := strings.Split(bytesconv.BytesToString(httpRequest), "\r\n")
@@ -110,7 +107,7 @@ func defaultHandleRecovery(c *Context, _ any) {
 	c.AbortWithStatus(http.StatusInternalServerError)
 }
 
-// stack returns a nicely formatted stack frame, skipping skip frames.
+// stack 返回格式良好的堆栈帧，并跳过指定的 skip 帧数。
 func stack(skip int) []byte {
 	buf := new(bytes.Buffer) // the returned data
 	// As we loop, we open files and read them. These variables record the currently
@@ -139,10 +136,10 @@ func stack(skip int) []byte {
 	return buf.Bytes()
 }
 
-// readNthLine reads the nth line from the file.
-// It returns the trimmed content of the line if found,
-// or an empty string if the line doesn't exist.
-// If there's an error opening the file, it returns the error.
+// readNthLine 从文件中读取第 n 行。
+// 如果找到该行，则返回其去除首尾空白后的内容；
+// 如果该行不存在，则返回空字符串。
+// 如果打开文件时发生错误，则返回该错误。
 func readNthLine(file string, n int) (string, error) {
 	if n < 0 {
 		return "", nil
@@ -168,21 +165,20 @@ func readNthLine(file string, n int) (string, error) {
 	return "", nil
 }
 
-// function returns, if possible, the name of the function containing the PC.
+// 此函数在可能的情况下，返回包含该程序计数器（PC）的函数名称。
 func function(pc uintptr) string {
 	fn := runtime.FuncForPC(pc)
 	if fn == nil {
 		return dunno
 	}
 	name := fn.Name()
-	// The name includes the path name to the package, which is unnecessary
-	// since the file name is already included.  Plus, it has center dots.
-	// That is, we see
+	// 此名称包含了包的路径名，但由于文件名已包含，因此这是多余的。而且，路径名中包含中点符号。
+	// 也就是说，我们看到的是
 	//	runtime/debug.*T·ptrmethod
-	// and want
+	// 而我们想要的是
 	//	*T.ptrmethod
-	// Also the package path might contain dot (e.g. code.google.com/...),
-	// so first eliminate the path prefix
+	// 另外，包路径中也可能包含点号（例如 code.google.com/...），
+	// 因此需要先去除路径前缀
 	if lastSlash := strings.LastIndexByte(name, '/'); lastSlash >= 0 {
 		name = name[lastSlash+1:]
 	}
@@ -193,7 +189,7 @@ func function(pc uintptr) string {
 	return name
 }
 
-// timeFormat returns a customized time string for logger.
+// timeFormat 返回一个供日志记录器使用的自定义时间格式字符串。
 func timeFormat(t time.Time) string {
 	return t.Format("2006/01/02 - 15:04:05")
 }
