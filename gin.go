@@ -446,20 +446,32 @@ func (engine *Engine) Routes() (routes RoutesInfo) {
 	return routes
 }
 
-func iterate(path, method string, routes RoutesInfo, root *node) RoutesInfo {
+func iterate(
+	path, method string, // 当前拼接的路径、请求方法
+	routes RoutesInfo,   // 已经收集到的路由列表
+	root *node,          // 当前正在遍历的节点
+) RoutesInfo { // 返回更新后的路由列表
+	// 1. 把当前节点的路径拼接到总路径上
 	path += root.path
+
+	// 2. 如果当前节点绑定了处理函数 → 说明这是一条真正的路由
 	if len(root.handlers) > 0 {
 		handlerFunc := root.handlers.Last()
+
+		// 把这条路由加入列表
 		routes = append(routes, RouteInfo{
-			Method:      method,
-			Path:        path,
-			Handler:     nameOfFunction(handlerFunc),
-			HandlerFunc: handlerFunc,
+			Method:      method,                      // GET/POST/PUT...
+			Path:        path,                        // 完整路径，如 /user/list
+			Handler:     nameOfFunction(handlerFunc), // 函数名
+			HandlerFunc: handlerFunc,                 // 处理函数本身
 		})
 	}
+
+	// 3. 递归遍历所有子节点
 	for _, child := range root.children {
 		routes = iterate(path, method, routes, child)
 	}
+	// 4. 返回收集好的列表
 	return routes
 }
 

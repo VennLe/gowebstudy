@@ -200,34 +200,21 @@ type PushOptions struct {
 	Header Header
 }
 
-// Pusher is the interface implemented by ResponseWriters that support
-// HTTP/2 server push. For more background, see
+// Pusher 是由支持 HTTP/2 服务器推送的 ResponseWriters 实现的接口。更多背景信息，请参阅
 // https://tools.ietf.org/html/rfc7540#section-8.2.
 type Pusher interface {
-	// Push initiates an HTTP/2 server push. This constructs a synthetic
-	// request using the given target and options, serializes that request
-	// into a PUSH_PROMISE frame, then dispatches that request using the
-	// server's request handler. If opts is nil, default options are used.
-	//
-	// The target must either be an absolute path (like "/path") or an absolute
-	// URL that contains a valid host and the same scheme as the parent request.
-	// If the target is a path, it will inherit the scheme and host of the
-	// parent request.
-	//
-	// The HTTP/2 spec disallows recursive pushes and cross-authority pushes.
-	// Push may or may not detect these invalid pushes; however, invalid
-	// pushes will be detected and canceled by conforming clients.
-	//
-	// Handlers that wish to push URL X should call Push before sending any
-	// data that may trigger a request for URL X. This avoids a race where the
-	// client issues requests for X before receiving the PUSH_PROMISE for X.
-	//
-	// Push will run in a separate goroutine making the order of arrival
-	// non-deterministic. Any required synchronization needs to be implemented
-	// by the caller.
-	//
-	// Push returns ErrNotSupported if the client has disabled push or if push
-	// is not supported on the underlying connection.
+	// Push 发起一个 HTTP/2 服务器推送。它会使用给定的目标和选项构建一个合成请求，
+	// 将该请求序列化为 PUSH_PROMISE 帧，然后通过服务器的请求处理器分发该请求。
+	// 如果 opts 为 nil，则使用默认选项。
+	// 目标必须是绝对路径（如 "/path"）或包含有效主机且与父请求方案相同的绝对 URL。
+	// 如果目标为路径，它将继承父请求的方案和主机。
+	// HTTP/2 规范禁止递归推送和跨域推送。Push 可能会也可能不会检测到这些无效推送；
+	// 然而，符合规范的客户端会检测并取消无效推送。
+	// 希望推送 URL X 的处理器应在发送任何可能触发对 URL X 的请求的数据之前调用 Push。
+	// 这避免了客户端在收到 X 的 PUSH_PROMISE 之前就发出对 X 的请求的竞争条件。
+	// Push 会在一个单独的 goroutine 中运行，因此到达顺序是不确定的。
+	// 任何所需的同步都需要由调用者实现。
+	// 如果客户端禁用了推送，或者底层连接不支持推送，则 Push 会返回 ErrNotSupported。
 	Push(target string, opts *PushOptions) error
 }
 

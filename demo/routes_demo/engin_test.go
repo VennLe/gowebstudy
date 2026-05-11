@@ -9,7 +9,7 @@ import (
 
 func middleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("hello middleware.")
+		//c.AbortWithStatusJSON("200")
 	}
 }
 func middleWare1() gin.HandlerFunc {
@@ -26,7 +26,6 @@ func en() gin.OptionFunc {
 
 func TestEngin(t *testing.T) {
 	g := gin.New(en())
-	use := g.Use()
 	g.GET("/index", func(c *gin.Context) {
 		c.String(http.StatusOK, "hello index.")
 	})
