@@ -448,8 +448,8 @@ func (engine *Engine) Routes() (routes RoutesInfo) {
 
 func iterate(
 	path, method string, // 当前拼接的路径、请求方法
-	routes RoutesInfo,   // 已经收集到的路由列表
-	root *node,          // 当前正在遍历的节点
+	routes RoutesInfo, // 已经收集到的路由列表
+	root *node, // 当前正在遍历的节点
 ) RoutesInfo { // 返回更新后的路由列表
 	// 1. 把当前节点的路径拼接到总路径上
 	path += root.path
